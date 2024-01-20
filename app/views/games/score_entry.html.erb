@@ -1,18 +1,12 @@
 <!-- app/views/games/score_entry.html.erb -->
-
-<%= form_with(model: @game, local: true) do |form| %>
-  <div class="game-info">
-    <h2>Registro de Puntuaciones</h2>
-    <p>Juego iniciado el: <%= @game.created_at.strftime("%d/%m/%Y") %></p>
-  </div>
-
-  <div class="scorecard">
-    <% @holes.each do |hole| %>
-      <div class="hole" id="hole-<%= hole.hole_number %>">
-        <h3>Hoyo <%= hole.hole_number %>: Par <%= hole.par %>, Handicap <%= hole.handicap %>, Yardas <%= hole.yardage %></h3>
-
+<% if @current_hole %>
+  <div class="hole" id="hole-<%= @current_hole.hole_number %>">
+    <%= form_with(model: @game, url: update_scores_game_path(@game, current_hole_number: @current_hole_number), method: :patch) do |form| %>
+      <!-- ... -->
+      <div class="hole" id="hole-<%= @current_hole.hole_number %>">
+        <h3>Hoyo <%= @current_hole.hole_number %>: Par <%= @current_hole.par %>, Handicap <%= @current_hole.handicap %>, Yardas <%= @current_hole.yardage %></h3>
         <%= form.fields_for :scores do |score_fields| %>
-          <% if score_fields.object.hole == hole %>
+          <% if score_fields.object.hole_id == @current_hole.id %>
             <div class="player-scores">
               <%= score_fields.hidden_field :hole_id %>
               <%= score_fields.hidden_field :player_id %>
@@ -24,10 +18,16 @@
           <% end %>
         <% end %>
       </div>
+      <div class="actions">
+        <%= form.submit "Guardar y Continuar al Siguiente Hoyo" %>
+      </div>
+      <div class="navigation">
+        <%= link_to 'Hoyo Anterior', score_entry_game_path(@game, hole_number: @current_hole_number - 1) if @current_hole_number > 1 %>
+        <%= link_to 'Siguiente Hoyo', score_entry_game_path(@game, hole_number: @current_hole_number + 1) if @current_hole_number < @holes.count %>
+      </div>
     <% end %>
   </div>
-
-  <div class="actions">
-    <%= form.submit "Guardar Puntuaciones" %>
-  </div>
+<% else %>
+  <!-- Mostrar mensaje de error o contenido alternativo -->
+  Error: No se encontró el hoyo <%= @current_hole_number %>
 <% end %>

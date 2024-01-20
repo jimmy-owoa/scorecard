@@ -1,12 +1,15 @@
 Rails.application.routes.draw do
   resources :scores
   resources :holes
+
   resources :games do
     member do
-      get :score_entry
+      get 'score_entry(/:hole_number)', to: 'games#score_entry', as: :score_entry
       patch :update_scores
     end
   end
+
+
   resources :players
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

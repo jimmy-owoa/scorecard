@@ -1,0 +1,51 @@
+<!-- app/views/games/_form.html.erb -->
+
+<%= form_with(model: game, local: true) do |form| %>
+
+  <% if game.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(game.errors.count, "error") %> prohibited this game from being saved:</h2>
+
+      <ul>
+        <% game.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :date %>
+    <%= form.date_select :date %>
+  </div>
+
+  <div class="field">
+    <%= form.label :is_nine_holes, "Número de Hoyos" %>
+    <%= form.select :is_nine_holes, [['9 Hoyos', true], ['18 Hoyos', false]], {}, { class: 'custom-select' } %>
+  </div>
+
+  <div class="field">
+    <%= form.label :player_ids, "Seleccionar Jugadores" %>
+    <%= form.collection_select :player_ids, Player.all, :id, :full_name, {}, { multiple: true, size: 10 } %>
+  </div>
+
+  <% if @holes.present? && @holes.any? %>
+    <div class="fields">
+      <% @holes.each do |hole| %>
+        <div class="field">
+          <%= form.fields_for :holes, hole do |hole_fields| %>
+            Nº hoyo<%= hole_fields.number_field :hole_number, min: 1 %> <br>
+            Par<%= hole_fields.number_field :par, min: 1 %><br>
+            Handicap<%= hole_fields.number_field :handicap, min: 1 %><br>
+            Yardage<%= hole_fields.number_field :yardage %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+
+<% end %>

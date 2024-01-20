@@ -1,0 +1,33 @@
+<!-- app/views/games/score_entry.html.erb -->
+
+<%= form_with(model: @game, local: true) do |form| %>
+  <div class="game-info">
+    <h2>Registro de Puntuaciones</h2>
+    <p>Juego iniciado el: <%= @game.created_at.strftime("%d/%m/%Y") %></p>
+  </div>
+
+  <div class="scorecard">
+    <% @holes.each do |hole| %>
+      <div class="hole" id="hole-<%= hole.hole_number %>">
+        <h3>Hoyo <%= hole.hole_number %>: Par <%= hole.par %>, Handicap <%= hole.handicap %>, Yardas <%= hole.yardage %></h3>
+
+        <%= form.fields_for :scores do |score_fields| %>
+          <% if score_fields.object.hole == hole %>
+            <div class="player-scores">
+              <%= score_fields.hidden_field :hole_id %>
+              <%= score_fields.hidden_field :player_id %>
+              <h4><%= score_fields.object.player.full_name %></h4>
+              strokes<%= score_fields.number_field :strokes, min: 1 %>
+              net<%= score_fields.number_field :net, min: 1 %>
+              points<%= score_fields.number_field :points, min: 1 %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit "Guardar Puntuaciones" %>
+  </div>
+<% end %>
